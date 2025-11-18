@@ -78,8 +78,13 @@ class CatDataProcessor:
 
         return self.df
     
-
-
+    def create_train_validation_test_split(self):
+        train_val_df, test_df = train_test_split(
+            self.df, test_size=self.test_split, stratify=self.df['breed'], random_state=42)
+        train_df, validation_df = train_test_split(
+            train_val_df, test_size=self.validation_split, stratify=train_val_df['breed'], random_state=42)
+        
+        return train_df, validation_df, test_df
 
 
 
