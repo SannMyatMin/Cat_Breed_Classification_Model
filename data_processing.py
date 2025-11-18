@@ -19,4 +19,20 @@ class CatDataProcessor:
         self.df               = None
         self.class_names      = []
 
-    
+    def create_image_dataframe(self):
+        image_data = []
+        base_dir = Path("dataset/images")
+        for breed_folder in os.path.lisdir(base_dir):
+            folder_path = os.path.join(base_dir, breed_folder)
+            if os.path.isdir(folder_path):
+                for filename in os.listdir(folder_path):
+                    if filename.endswith(('.jpg', ".png", ".jpeg")):
+                        filename_without_extension = os.path.splitext(filename)[0]
+                        img_id = filename_without_extension.split("_")[0]
+                        image_data.append({
+                            "id": img_id,
+                            "img_path": os.path.join(folder_path, filename),
+                            "breed": breed_folder
+                        })
+        image_dataframe = pd.DataFrame(image_data)
+        return image_dataframe
