@@ -54,5 +54,32 @@ class CatDataProcessor:
             merged_df = merged_df.rename(columns={'breed_folder': 'breed'})
         
         return merged_df
+    
+    def _validate_image_files(self):
+        valid_files   = []
+        missing_files = []
+        for index, row in self.df.iterrows():
+            if os.path.exists(row['img_path']):
+                valid_files.append(index)
+            else:
+                missing_files.append(index)
+        self.df.loc[valid_files]
+        if missing_files:
+            print(f"Warning:: {len(missing_files)} files are missing")
+        print(f"{len(valid_files)} files are valid")
+
+    def load_and_validate_data(self):
+        img_df  = self.create_image_dataframe()
+        self.df = self.merge_dataframe(img_df)
+        self._validate_image_files()
+        self.class_names = sorted(self.df['breed'].unique())
+        print(f"Final dataset : {len(self.df)} samples and {len(self.class_names)} breeds")
+        print(f"Breeds : {self.class_names}")
+
+        return self.df
+    
+
+
+
 
 
