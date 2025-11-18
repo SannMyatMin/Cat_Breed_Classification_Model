@@ -22,7 +22,7 @@ class CatDataProcessor:
     def create_image_dataframe(self):
         image_data = []
         base_dir = Path("dataset/images")
-        for breed_folder in os.path.lisdir(base_dir):
+        for breed_folder in os.listdir(base_dir):
             folder_path = os.path.join(base_dir, breed_folder)
             if os.path.isdir(folder_path):
                 for filename in os.listdir(folder_path):
@@ -36,3 +36,23 @@ class CatDataProcessor:
                         })
         image_dataframe = pd.DataFrame(image_data)
         return image_dataframe
+    
+    def merge_dataframe(self, image_df):
+        csv_df         = pd.read_csv(self.csv_path)
+        csv_df['id']   = csv_df['id'].astype(str).str.strip()
+        image_df['id'] = image_df['id'].astype(str).str.strip()
+
+        merged_df = pd.merge(image_df, csv_df[['id', 'breed']], left_on='id',
+                             right_on='id', how='inner', suffixes=('_folder', '_csv'))
+        breed_mismatch = merged_df[ merged_df['breed_folder'] != merged_df['breed_csv'] ]
+        if len(breed_mismatch) > 0:
+            print(f"Warning:: {len(breed_mismatch)} breed mismatches are found between csv and folder")
+            merged_df = merged_df.drop('breed_folder', axis=1)
+            merged_df = merged_df.rename(columns={'breed_csv': 'breed'})
+        else:
+            merged_df = merged_df.drop('breed_csv', axis=1)
+            merged_df = merged_df.rename(columns={'breed_folder': 'breed'})
+        
+        return merged_df
+
+
