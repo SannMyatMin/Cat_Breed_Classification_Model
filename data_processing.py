@@ -169,5 +169,12 @@ class CatDataProcessor:
         plt.tight_layout()
         plt.show()
 
+def set_up_data_pipeline():
+    data_processor = CatDataProcessor("dataset")
+    train_df, validation_df, test_df = data_processor.create_train_validation_test_split()
+    train, validation, test = data_processor.create_data_generator(train_df, validation_df, test_df)
+    
+    return data_processor, train, validation, test, train_df, validation_df, test_df
+
 
 

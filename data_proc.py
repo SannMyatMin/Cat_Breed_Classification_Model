@@ -284,20 +284,7 @@ class CatDataPreprocessor:
         
         return train_counts, val_counts
     
-    def visualize_samples(self, generator, num_samples=12):
-        """Visualize sample images from generator"""
-        images, labels = next(generator)
-        class_names = list(generator.class_indices.keys())
-        
-        plt.figure(figsize=(15, 10))
-        for i in range(min(num_samples, len(images))):
-            plt.subplot(3, 4, i+1)
-            plt.imshow(images[i])
-            true_label = class_names[np.argmax(labels[i])]
-            plt.title(f'{true_label}')
-            plt.axis('off')
-        plt.tight_layout()
-        plt.show()
+    
 
 # Simplified usage for your specific case
 def setup_data_pipeline():
@@ -332,81 +319,7 @@ def setup_data_pipeline():
     
     return preprocessor, train_gen, val_gen, test_gen, train_df, val_df, test_df
 
-# Alternative: Use your existing code and extend it
-def use_existing_code_structure():
-    """Use your existing code structure and extend it"""
-    
-    # Your existing code
-    csv = pd.read_csv("dataset/cat_breed.csv")
-    
-    image_data = []
-    base_dir = Path('dataset/images')
 
-    for breed_folder in os.listdir(base_dir):
-        folder_path = os.path.join(base_dir, breed_folder)
-        if os.path.isdir(folder_path):
-            for filename in os.listdir(folder_path):
-                if filename.endswith((".jpg", ".png", ".jpeg")):
-                    name_without_extension = os.path.splitext(filename)[0]
-                    img_id = name_without_extension.split("_")[0]
-                    image_data.append({
-                        "img_path": os.path.join(folder_path, filename),
-                        "id": img_id,
-                        "breed_folder": breed_folder  # Add breed from folder
-                    })
-    
-    img_df = pd.DataFrame(image_data)
-    
-    # Find ID column in CSV
-    id_column = None
-    for col in ['id', 'image_id', 'filename']:
-        if col in csv.columns:
-            id_column = col
-            break
-    
-    if id_column is None:
-        id_column = csv.columns[0]  # Use first column as ID
-    
-    # Convert IDs to string for merging
-    csv[id_column] = csv[id_column].astype(str)
-    img_df['id'] = img_df['id'].astype(str)
-    
-    # Merge with CSV to get breed labels
-    merged_df = pd.merge(
-        img_df, 
-        csv[[id_column, 'breed']], 
-        left_on='id', 
-        right_on=id_column, 
-        how='inner'
-    )
-    
-    print(f"Final merged dataset: {len(merged_df)} samples")
-    print(f"Breeds: {merged_df['breed'].unique()}")
-    
-    return merged_df
-
-# Quick test to see if your data loading works
-def test_data_loading():
-    """Test your data loading approach"""
-    
-    # Use your existing method
-    merged_df = use_existing_code_structure()
-    
-    # Display sample of the data
-    print("\nSample of merged data:")
-    print(merged_df[['id', 'breed', 'img_path']].head())
-    
-    # Check for any issues
-    print(f"\nData issues check:")
-    print(f"Missing breed values: {merged_df['breed'].isnull().sum()}")
-    print(f"Missing image paths: {merged_df['img_path'].isnull().sum()}")
-    print(f"Unique breeds: {len(merged_df['breed'].unique())}")
-    
-    # Check if images exist
-    existing_images = merged_df['img_path'].apply(lambda x: os.path.exists(x)).sum()
-    print(f"Existing images: {existing_images}/{len(merged_df)}")
-    
-    return merged_df
 
 # Run the complete pipeline
 if __name__ == "__main__":
