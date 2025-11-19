@@ -47,5 +47,47 @@ class CatBreedClassifierAI:
 
         # Output Layer
         outputs = layers.Dense(self.num_classes, activation="softmax")(x)
-        self.model = keras.Model(inputs, outputs)
 
+        self.model = keras.Model(inputs, outputs)
+        return self.model
+    
+    def compile_model(self, initial_learning_rate=1e-3):
+        self.model.compile(
+            optimizer = keras.optimizer.Adam(learning_rate = initial_learning_rate),
+            loss = "categorical_crossentropy",
+            metrics = ["accuracy",
+                       keras.metrics.Precision(name="precision"),
+                       keras.metrics.Recall(name="recall") ])
+        print("Model is compiled successsfully")
+
+    def get_callbacks(self):
+        callbacks = [
+            # Save Best Model
+            keras.callbacks.ModelCheckpoint(
+                "best_cat_breed_classification_model.h5",
+                monitor = "val_accuracy",
+                save_best_only = True,
+                mode = "max",
+                verbose = 1 ),
+
+            # Early Stopping
+            keras.callbacks.EarlyStopping(
+                monitor = "val_loss",
+                patience = 10,
+                restore_best_weights = True,
+                verbose = 1 ),
+
+            # Reduce Learning-Rate on Plateau
+            keras.callbacks.ReduceLROnPlateau(
+                monitor = "val_loss",
+                factor = 0.2,
+                min_lr = 1e-7,
+                verbose = 1 ),
+
+            # TensorBoard
+            keras.callbacks.TensorBoard(
+                log_dir = "./logs",
+                histrogram_freq = 1 )
+        ]
+
+        return callbacks
