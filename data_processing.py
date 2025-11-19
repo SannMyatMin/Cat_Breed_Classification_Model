@@ -135,11 +135,12 @@ class CatDataProcessor:
         return train_generator, validation_generator, test_generator
     
     def analyze_class_distribution(self, train_df, val_df, test_df):
-        fig,ax = plt.subplots(4, 1, figsize=(24, 37))
+        fig,ax = plt.subplots(4, 1, figsize=(24, 47))
 
         train_df_count = train_df['breed'].value_counts()
         ax[0].bar(range(len(train_df_count)), train_df_count.values, width=0.8)
         ax[0].set_title("Training Set", fontweight="bold", fontsize=24)
+        ax[0].title.set_position([0.5, 1.2])
         ax[0].set_ylabel("Count")
         ax[0].set_xticks(range(len(train_df_count)))
         ax[0].set_xticklabels(train_df_count.index, rotation=90, fontsize=15)
@@ -147,6 +148,7 @@ class CatDataProcessor:
         val_df_count = val_df['breed'].value_counts()
         ax[1].bar(range(len(val_df_count)), val_df_count.values)
         ax[1].set_title("Validation Set", fontweight="bold", fontsize=24)
+        ax[1].title.set_position([0.5, 1.2])
         ax[1].set_ylabel("Count")
         ax[1].set_xticks(range(len(val_df_count)))
         ax[1].set_xticklabels(val_df_count.index, rotation=90, fontsize=15)
@@ -154,14 +156,15 @@ class CatDataProcessor:
         test_df_count = test_df['breed'].value_counts()
         ax[2].bar(range(len(test_df_count)), test_df_count.values)
         ax[2].set_title("Testing Set", fontweight="bold", fontsize=24)
+        ax[2].title.set_position([0.5, 1.2])
         ax[2].set_ylabel("Count")
         ax[2].set_xticks(range(len(test_df_count)))
         ax[2].set_xticklabels(test_df_count.index, rotation=90, fontsize=15)
 
-        ax[3].text(0.1, 0.8, "Class Distribution Status", fontsize=24, fontweight="bold")
-        ax[3].text(0.1, 0.7, f"Maximum Samples per Class = {max(train_df_count)}", fontsize=15)
-        ax[3].text(0.1, 0.6, f"Minimum Samples per Class = {min(train_df_count)}", fontsize=15)
-        ax[3].text(0.1, 0.5, f"Average Samples per Class = {train_df_count.mean():.2f}", fontsize=15)
+        ax[3].text(0, 0.8, "Class Distribution Status", fontsize=24, fontweight="bold")
+        ax[3].text(0, 0.7, f"Maximum Samples per Class = {max(train_df_count)}", fontsize=15)
+        ax[3].text(0, 0.6, f"Minimum Samples per Class = {min(train_df_count)}", fontsize=15)
+        ax[3].text(0, 0.5, f"Average Samples per Class = {train_df_count.mean():.2f}", fontsize=15)
         ax[3].set_xlim(0,1)
         ax[3].set_ylim(0,1)
         ax[3].axis('off')
@@ -170,7 +173,7 @@ class CatDataProcessor:
         plt.show()
 
 def set_up_data_pipeline():
-    data_processor = CatDataProcessor("dataset")
+    data_processor = CatDataProcessor(dataset_dir="dataset", img_size=(380, 380))
     train_df, validation_df, test_df = data_processor.create_train_validation_test_split()
     train, validation, test = data_processor.create_data_generator(train_df, validation_df, test_df)
     
