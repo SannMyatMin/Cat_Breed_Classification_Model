@@ -1,7 +1,5 @@
 import os
-import numpy as np
 import pandas as pd
-import tensorflow as tf
 from pathlib import Path
 from tensorflow import keras
 import matplotlib.pyplot as plt

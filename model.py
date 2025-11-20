@@ -12,8 +12,7 @@ class CatBreedClassifierAI:
         self.model_size  = model_size
         self.image_size  = img_size
         self.model       = None
-        self.history     = None
-
+        
     def build_model(self):
         if self.model_size == "medium":
             base_model = keras.applications.EfficientNetB2(
