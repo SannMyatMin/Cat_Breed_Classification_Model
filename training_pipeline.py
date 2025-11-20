@@ -1,5 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
+import matplotlib.pyplot as plt
 
 class TrainingPipeline:
     def __init__(self, model, train_gen, val_gen):
@@ -46,7 +47,7 @@ class TrainingPipeline:
         
         return history2
     
-    def run_complete_training(self, initial_epochs=15, fine_tune_epochs=20):
+    def train_model(self, initial_epochs=15, fine_tune_epochs=20):
         history1 = self.train_initial(epochs = initial_epochs)
         history2 = self.unfreeze_and_fine_tune(fine_tune_epochs = fine_tune_epochs)
         self.history = self._combine_history(history1, history2)
@@ -58,4 +59,43 @@ class TrainingPipeline:
         for key in history1.history.keys():
             combined_history[key] = history1.history[key] + history2.history[key]
         return combined_history 
+    
+    def plot_training_history(self, history):
+   
+        fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+        
+        # Accuracy
+        axes[0, 0].plot(history['accuracy'], label='Training Accuracy')
+        axes[0, 0].plot(history['val_accuracy'], label='Validation Accuracy')
+        axes[0, 0].set_title('Model Accuracy')
+        axes[0, 0].set_xlabel('Epoch')
+        axes[0, 0].set_ylabel('Accuracy')
+        axes[0, 0].legend()
+        
+        # Loss
+        axes[0, 1].plot(history['loss'], label='Training Loss')
+        axes[0, 1].plot(history['val_loss'], label='Validation Loss')
+        axes[0, 1].set_title('Model Loss')
+        axes[0, 1].set_xlabel('Epoch')
+        axes[0, 1].set_ylabel('Loss')
+        axes[0, 1].legend()
+        
+        # Precision
+        axes[1, 0].plot(history['precision'], label='Training Precision')
+        axes[1, 0].plot(history['val_precision'], label='Validation Precision')
+        axes[1, 0].set_title('Model Precision')
+        axes[1, 0].set_xlabel('Epoch')
+        axes[1, 0].set_ylabel('Precision')
+        axes[1, 0].legend()
+        
+        # Recall
+        axes[1, 1].plot(history['recall'], label='Training Recall')
+        axes[1, 1].plot(history['val_recall'], label='Validation Recall')
+        axes[1, 1].set_title('Model Recall')
+        axes[1, 1].set_xlabel('Epoch')
+        axes[1, 1].set_ylabel('Recall')
+        axes[1, 1].legend()
+        
+        plt.tight_layout()
+        plt.show()
 
