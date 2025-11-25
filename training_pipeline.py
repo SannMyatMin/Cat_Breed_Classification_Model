@@ -3,11 +3,12 @@ from tensorflow import keras
 import matplotlib.pyplot as plt
 
 class TrainingPipeline:
-    def __init__(self, model, train_gen, val_gen):
+    def __init__(self, model, train_gen, val_gen, callbacks):
         self.model     = model
         self.train_gen = train_gen
         self.val_gen   = val_gen
         self.history   = None
+        self.callbacks = callbacks
 
     def train_initial(self, epochs=15):
         print("Stage-1: Training with frozen base model")
@@ -15,7 +16,7 @@ class TrainingPipeline:
             self.train_gen,
             epochs = epochs,
             validation_data = self.val_gen,
-            callbacks = self.model.get_claabacks(),
+            callbacks = self.callbacks,
             verbose = 1 )
         
         return history1
@@ -27,12 +28,12 @@ class TrainingPipeline:
 
         fine_tune_at = len(base_model.layers) // 2
         for layers in base_model.layers[:fine_tune_at]:
-            layers.trainable = True
+            layers.trainable = False
         print(f"Unfroze {len(base_model.layers) - fine_tune_at} layers for fine_tuning")
 
         # Recompile model for unfrozen layers
         self.model.compile(
-            optimizer = keras.optimizers.Adam(learning_rate=fine_tune_lr/10),
+            optimizer = keras.optimizers.Adam(learning_rate=fine_tune_lr),
             loss = "categorical_crossentropy",
             metrics = ["accuracy",
                        keras.metrics.Precision(name = "precision"),
@@ -42,7 +43,8 @@ class TrainingPipeline:
             self.train_gen,
             epochs = fine_tune_epochs,
             initial_epoch = self.history.epoch[-1] + 1 if self.history else 0,
-            validation_gen = self.val_gen,
+            validation_data = self.val_gen,
+            callbacks = self.callbacks,
             verbose = 1 )
         
         return history2
@@ -53,7 +55,7 @@ class TrainingPipeline:
         self.history = self._combine_history(history1, history2)
 
         return self.history
-        
+    
     def _combine_history(self, history1, history2):
         combined_history = {}
         for key in history1.history.keys():

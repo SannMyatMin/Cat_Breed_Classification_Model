@@ -20,7 +20,7 @@ class CatDataProcessor:
 
     def create_image_dataframe(self):
         image_data = []
-        base_dir = Path("dataset/images")
+        base_dir = Path(self.images_dir)
         for breed_folder in os.listdir(base_dir):
             folder_path = os.path.join(base_dir, breed_folder)
             if os.path.isdir(folder_path):
@@ -171,11 +171,12 @@ class CatDataProcessor:
         plt.show()
 
 def set_up_data_pipeline():
-    data_processor = CatDataProcessor(dataset_dir="dataset", img_size=(380, 380))
+    data_processor = CatDataProcessor(dataset_dir="/workspace/dataset", img_size=(380, 380))
+    data_processor.load_and_validate_data()
     train_df, validation_df, test_df = data_processor.create_train_validation_test_split()
     train, validation, test = data_processor.create_data_generator(train_df, validation_df, test_df)
     
-    return data_processor, train, validation, test, train_df, validation_df, test_df
+    return data_processor, train, validation, test
 
 
 

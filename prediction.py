@@ -9,7 +9,7 @@ class CatBreedPredictor:
         self.class_names = class_names
 
     def predict_breed(self, image, top_k=3):
-        img = keras.preprocessing.image.load_image(image, target_size=(380,380))
+        img = keras.preprocessing.image.load_img(image, target_size=(380,380))
         img_array = keras.preprocessing.image.img_to_array(img)
         img_array = np.expand_dims(img_array, axis=0)
         img_array = keras.applications.efficientnet.preprocess_input(img_array)

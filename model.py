@@ -26,9 +26,9 @@ class CatBreedClassifierAI:
                 input_shape = (*self.image_size, 3) )
         base_model.trainable = False
 
-        inputs = keras.Input(Shape=(*self.image_size, 3))
+        inputs = keras.Input(shape=(*self.image_size, 3))
         # Preprocess image
-        x = keras.applications.efficience.preprocess_input(inputs)
+        x = keras.applications.efficientnet.preprocess_input(inputs)
         x = base_model(x, training=False)
 
         # Classifier Head
@@ -52,7 +52,7 @@ class CatBreedClassifierAI:
     
     def compile_model(self, initial_learning_rate=1e-3):
         self.model.compile(
-            optimizer = keras.optimizer.Adam(learning_rate = initial_learning_rate),
+            optimizer = keras.optimizers.Adam(learning_rate = initial_learning_rate),
             loss = "categorical_crossentropy",
             metrics = ["accuracy",
                        keras.metrics.Precision(name="precision"),
@@ -86,7 +86,7 @@ class CatBreedClassifierAI:
             # TensorBoard
             keras.callbacks.TensorBoard(
                 log_dir = "./logs",
-                histrogram_freq = 1 )
+                histogram_freq = 1 )
         ]
 
         return callbacks
