@@ -171,7 +171,7 @@ class CatDataProcessor:
         plt.show()
 
 def set_up_data_pipeline():
-    data_processor = CatDataProcessor(dataset_dir="/workspace/dataset", img_size=(380, 380))
+    data_processor = CatDataProcessor(dataset_dir="dataset", img_size=(380, 380))
     data_processor.load_and_validate_data()
     train_df, validation_df, test_df = data_processor.create_train_validation_test_split()
     train, validation, test = data_processor.create_data_generator(train_df, validation_df, test_df)
